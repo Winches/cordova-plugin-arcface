@@ -1,0 +1,17 @@
+{
+  "name": "cordova-plugin-arcface",
+  "version": "0.0.1",
+  "description": "",
+  "cordova": {
+    "id": "cordova-plugin-arcface",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "cyan",
+  "license": "MIT"
+}

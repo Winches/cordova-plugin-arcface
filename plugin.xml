@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-arcface" version="0.0.1" 
+    xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>Arcface</name>
+    <js-module name="Arcface" src="www/Arcface.js">
+        <clobbers target="cordova.plugins.Arcface" />
+    </js-module>
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="Arcface">
+                <param name="android-package" value="cordova.plugin.arcface.Arcface" />
+            </feature>
+        </config-file>
+
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+        </config-file>
+        <config-file parent="application" target="AndroidManifest.xml" mode="merge">
+            <provider android:name="android.support.v4.content.FileProvider" android:authorities="${applicationId}.provider" android:exported="false" android:grantUriPermissions="true">
+                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths"/>
+            </provider>
+        </config-file>
+
+        <resource-file src="src/android/res/xml/provider_paths.xml" target="res/xml/provider_paths.xml" />
+
+        <config-file target="res/values/strings.xml" parent="/*">
+            <!-- 激活 -->
+            <string name="invalid_app_id">无效AppId</string>
+            <string name="invalid_sdk_key">无效SdkKey</string>
+            <string name="active_success">激活引擎成功</string>
+            <string name="already_activated">引擎已激活，无需再次激活</string>
+            <string name="active_failed">引擎激活失败，错误码为 %d</string>
+            <!--各个界面引擎初始化失败的提示-->
+            <string name="init_failed">引擎初始化失败，错误码为 %d</string>
+            <string name="engine_not_initialized">引擎未初始化，错误码为 %d</string>
+            <!-- 人脸特征 -->
+            <string name="invalid_image">无效图像</string>
+            <string name="detect_face_failed">未检测到人脸，错误码为 %d</string>
+            <string name="extract_feature_failed">人脸特征提取失败，错误码为 %d</string>
+            <!--人脸比对-->
+            <string name="compare_failed">比对失败，错误码为 %d</string>
+            <!--获取权限失败-->
+            <string name="permission_denied">权限被拒绝！</string>
+            <!--获取本地图片失败提示-->
+            <string name="get_picture_failed">获取图片失败</string>
+        </config-file>
+
+
+        <source-file src="src/android/Arcface.java" target-dir="src/cordova/plugin/arcface" />
+        <source-file src="src/android/ArcfaceService.java" target-dir="src/cordova/plugin/arcface" />
+
+        <source-file src="libs/android/arcsoft_face.jar" target-dir="libs"/>
+        <source-file src="libs/android/armeabi-v7a/libarcsoft_face.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="libs/android/armeabi-v7a/libarcsoft_face_engine.so" target-dir="libs/armeabi-v7a"/>
+        <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference"/>
+    </platform>
+</plugin>
