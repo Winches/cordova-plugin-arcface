@@ -29,3 +29,9 @@ compare two face feature string.
 ```javascript
 compareFeature(featureArray,resolve,reject)
 ```
+### getLiveness
+detect liveness info
+
+```javascript
+getLiveness(filePath,resolve,reject)
+```
