@@ -49,6 +49,8 @@
 
         <source-file src="src/android/Arcface.java" target-dir="src/cordova/plugin/arcface" />
         <source-file src="src/android/ArcfaceService.java" target-dir="src/cordova/plugin/arcface" />
+        <source-file src="src/android/util/TrackUtil.java" target-dir="src/cordova/plugin/arcface/util" />
+        <source-file src="src/android/util/face/LivenessType.java" target-dir="src/cordova/plugin/arcface/util/face" />
 
         <source-file src="libs/android/arcsoft_face.jar" target-dir="libs"/>
         <source-file src="libs/android/armeabi-v7a/libarcsoft_face.so" target-dir="libs/armeabi-v7a"/>

@@ -1,7 +1,10 @@
 package cordova.plugin.arcface;
 
+import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FaceFeature;
 import com.arcsoft.face.FaceSimilar;
+import com.arcsoft.face.LivenessInfo;
+import com.arcsoft.face.util.ImageUtils;
 
 import org.apache.cordova.BuildConfig;
 import org.apache.cordova.CordovaPlugin;
@@ -23,6 +26,10 @@ import android.graphics.Bitmap;
 import android.util.Base64;
 import android.provider.MediaStore;
 
+import java.io.ByteArrayOutputStream;
+
+import cordova.plugin.arcface.util.face.LivenessType;
+
 /**
  * This class echoes a string called from JavaScript.
  */
@@ -34,6 +41,12 @@ public class Arcface extends CordovaPlugin {
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
     private static final int ACTION_CHOOSE_IMAGE = 0x201;
     private static final String[] NEEDED_PERMISSIONS = new String[] { Manifest.permission.READ_PHONE_STATE };
+
+    private static final String ACTION_ACTIVE_ENGINE = "activeEngine";
+    private static final String ACTION_GET_FACE_FEATURE = "getFaceFeature";
+    private static final String ACTION_GET_FACE_FEATURE_BY_LOCALIMAGE = "getFaceFeatureByLocalImage";
+    private static final String ACTION_COMPARE_FEATURE = "compareFeature";
+    private static final String ACTION_GET_LIVENESS = "getLiveness";
 
     private Context context;
     private CallbackContext callbackContext;
@@ -104,23 +117,27 @@ public class Arcface extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         this.callbackContext = callbackContext;
         switch (action) {
-            case "activeEngine":
+            case ACTION_ACTIVE_ENGINE:
                 activeEngine(callbackContext);
                 return true;
-            case "getFaceFeature":
+            case ACTION_GET_FACE_FEATURE:
                 String path = args.getString(0);
                 getFaceFeature(path, callbackContext);
                 return true;
-            case "getFaceFeatureByLocalImage":
+            case ACTION_GET_FACE_FEATURE_BY_LOCALIMAGE:
                 if (BuildConfig.DEBUG) {
                     chooseLocalImage();
                 } else {
                     showToast("invalid invocation");
                 }
                 return true;
-            case "compareFeature":
+            case ACTION_COMPARE_FEATURE:
                 JSONArray arr = args.getJSONArray(0);
                 compareFeature(arr, callbackContext);
+                return true;
+            case ACTION_GET_LIVENESS:
+                String imgpath = args.getString(0);
+                getLiveness(imgpath, callbackContext);
                 return true;
             default:
                 return false;
@@ -194,6 +211,33 @@ public class Arcface extends CordovaPlugin {
         } catch (Exception ex) {
             callbackContext.error(ex.getMessage());
         }
+    }
+
+    private void getLiveness(String path, CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    faceService.initialize();
+                    if (path == null || path.length() == 0)
+                        throw new Exception(getString("string", "invalid_image"));
+
+                    Uri uri = Uri.parse(path);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
+
+                    bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                    bitmap = ImageUtils.alignBitmapForBgr24(bitmap);
+                    byte[] bgr24 = ImageUtils.bitmapToBgr24(bitmap);
+
+                    LivenessInfo liveness = faceService.getLiveness(bgr24, bitmap.getWidth(), bitmap.getHeight(),
+                            FaceEngine.CP_PAF_BGR24, LivenessType.RGB);
+                    callbackContext.success(liveness.getLiveness());
+                } catch (Exception ex) {
+                    callbackContext.error(ex.getMessage());
+                }
+            }
+        });
     }
 
     // #endregion

@@ -15,3 +15,7 @@ exports.getFaceFeatureByLocalImage = function (success, error) {
 exports.compareFeature = function (obj, success, error) {
     exec(success, error, 'Arcface', 'compareFeature', [obj]);
 };
+
+exports.getLiveness = function (obj, success, error) {
+    exec(success, error, 'Arcface', 'getLiveness', [obj]);
+};

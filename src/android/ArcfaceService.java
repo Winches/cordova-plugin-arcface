@@ -11,7 +11,11 @@ import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FaceFeature;
 import com.arcsoft.face.FaceInfo;
 import com.arcsoft.face.FaceSimilar;
+import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.util.ImageUtils;
+
+import cordova.plugin.arcface.util.TrackUtil;
+import cordova.plugin.arcface.util.face.LivenessType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,5 +155,43 @@ public class ArcfaceService {
         if (code != ErrorInfo.MOK)
             throw new Exception(getString("string", "compare_failed", code));
         return matching;
+    }
+
+    /**
+     * 活体检测
+     * @param img
+     * @param width
+     * @param height
+     * @param format
+     * @param livenessType
+     * @return
+     * @throws Exception
+     */
+    public LivenessInfo getLiveness(byte[] img, int width, int height, int format, LivenessType livenessType)
+            throws Exception {
+        if (livenessType != LivenessType.RGB)
+            throw new Exception(String.format("do not support liveness type %s yet", livenessType));
+
+        List<FaceInfo> faceInfoList = new ArrayList<>();
+        int detectCode = faceEngine.detectFaces(img, width, height, format, faceInfoList);
+        if (faceInfoList.size() == 0) {
+            throw new Exception(getString("string", "detect_face_failed", detectCode));
+        }
+        TrackUtil.keepMaxFace(faceInfoList);
+
+        List<LivenessInfo> livenessInfoList = new ArrayList<>();
+        int flCode = faceEngine.process(img, width, height, format, faceInfoList, FaceEngine.ASF_LIVENESS);
+
+        Log.i(LOG_TAG, "process liveness image result code " + flCode);
+
+        if (flCode == ErrorInfo.MOK) {
+            flCode = faceEngine.getLiveness(livenessInfoList);
+        }
+        Log.i(LOG_TAG, "get liveness result code " + flCode);
+
+        if (flCode != ErrorInfo.MOK || livenessInfoList.size() == 0)
+            throw new Exception(String.format("detect liveness failed:%s", flCode));
+
+        return livenessInfoList.get(0);
     }
 }
