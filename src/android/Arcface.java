@@ -185,7 +185,7 @@ public class Arcface extends CordovaPlugin {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
 
                     FaceFeature face = faceService.getFaceFeature(bitmap);
-                    callbackContext.success(Base64.encodeToString(face.getFeatureData(), Base64.DEFAULT));
+                    callbackContext.success(Base64.encodeToString(face.getFeatureData(), Base64.NO_WRAP));
                 } catch (Exception ex) {
                     callbackContext.error(ex.getMessage());
                 }
@@ -203,8 +203,8 @@ public class Arcface extends CordovaPlugin {
 
             FaceFeature leftFeature = new FaceFeature();
             FaceFeature rightFeature = new FaceFeature();
-            leftFeature.setFeatureData(Base64.decode(left, Base64.DEFAULT));
-            rightFeature.setFeatureData(Base64.decode(right, Base64.DEFAULT));
+            leftFeature.setFeatureData(Base64.decode(left, Base64.NO_WRAP));
+            rightFeature.setFeatureData(Base64.decode(right, Base64.NO_WRAP));
 
             FaceSimilar ret = faceService.compareFeature(leftFeature, rightFeature);
             callbackContext.success(JSONObject.numberToString(ret.getScore()));

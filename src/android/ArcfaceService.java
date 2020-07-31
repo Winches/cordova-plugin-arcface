@@ -133,6 +133,7 @@ public class ArcfaceService {
         long frStartTime = System.currentTimeMillis();
         int code = faceEngine.extractFaceFeature(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList.get(0),
                 faceFeature);
+        Log.i(LOG_TAG, "extract feature: fr costTime = " + (System.currentTimeMillis() - frStartTime));
         if (code != ErrorInfo.MOK) {
             throw new Exception(getString("string", "extract_feature_failed", code));
         }
