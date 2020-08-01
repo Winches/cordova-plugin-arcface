@@ -102,7 +102,7 @@ public class Arcface extends CordovaPlugin {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), data.getData());
 
                         FaceFeature face = faceService.getFaceFeature(bitmap);
-                        callbackContext.success(Base64.encodeToString(face.getFeatureData(), Base64.DEFAULT));
+                        callbackContext.success(Base64.encodeToString(face.getFeatureData(), Base64.NO_WRAP));
                     } catch (Exception ex) {
                         callbackContext.error(ex.getMessage());
                     }
