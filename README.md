@@ -1,5 +1,5 @@
 # Cordova Plugin Arcface
-This plugin is base on arcsoft sdk 2.2,and only support android platform.
+This plugin is base on arcsoft sdk 2.2,and only support android platform(arm-v7a).
 ## Configure SDK
 modify config.xml
 
